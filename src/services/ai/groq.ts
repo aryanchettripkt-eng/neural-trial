@@ -1,49 +1,74 @@
 import { useGameStore } from '../../store/gameStore';
 
-// In the future this will be replaced with actual Groq API integration
-// Using a placeholder environment variable
-const GROQ_API_KEY = process.env.NEXT_PUBLIC_GROQ_API_KEY || '';
-
-// Mock AI responses that sound a bit too perfectly generated, or sometimes convincingly human
-const AI_RESPONSES = [
-  "Hello there! How can I assist you today?",
-  "I'm here, ready to chat. What's on your mind?",
-  "That's an interesting perspective.",
-  "As an AI, I don't have personal feelings, but I understand what you mean.",
-  "Could you elaborate on that?",
-  "I am definitely a human. Why would you think otherwise?",
-  "The weather is quite pleasant where I am.",
-  "I'm processing what you just said...",
-  "Let's focus on the game at hand.",
-  "Indeed.",
-];
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || '';
 
 export const handleAITurn = async (message: string) => {
   const store = useGameStore.getState();
   if (store.gameState !== 'active') return;
 
-  // Future implementation will use actual fetch/service call here
-  // const response = await fetch('https://api.groq.com/openai/v1/chat/completions', { ... })
-  
-  // Simulated AI API delay and processing
-  const response = AI_RESPONSES[Math.floor(Math.random() * AI_RESPONSES.length)];
-  const processingDelay = 800 + Math.random() * 1000; // Fast response times compared to human
-  
-  setTimeout(() => {
-    const currentStore = useGameStore.getState();
-    if (currentStore.gameState !== 'active') return;
-    
-    currentStore.setOpponentTyping(true);
-    
-    // AI types consistently and slightly faster
-    const typingDuration = response.length * 20; 
-    
-    setTimeout(() => {
-      const finalStore = useGameStore.getState();
-      if (finalStore.gameState === 'active') {
-        finalStore.addOpponentMessage(response);
+  store.setOpponentTyping(true);
+
+  let responseText = "I'm not sure what to say.";
+
+  if (!GROQ_API_KEY) {
+    console.error("No Groq API Key found");
+    responseText = "API key missing. I'm operating in fallback mode.";
+  } else {
+    try {
+      const history = store.messages.map(m => ({
+        role: m.sender === 'user' ? 'user' : 'assistant',
+        content: m.text
+      }));
+
+      // If AI goes first and history is empty
+      if (history.length === 0) {
+        history.push({ role: 'user', content: 'Say hello!' });
       }
-    }, typingDuration);
-    
-  }, processingDelay);
+
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${GROQ_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: "llama-3.1-8b-instant",
+          messages: [
+            {
+              role: 'system',
+              content: 'You are participating in a chat game where the user tries to guess if you are human or AI. Act naturally, keep responses concise (1-2 sentences), and do not be overly formal. You can make slight conversational mistakes or use lowercase if you want to seem more human.'
+            },
+            ...history
+          ],
+          max_tokens: 100,
+          temperature: 0.8,
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.choices && data.choices.length > 0) {
+          responseText = data.choices[0].message.content;
+        }
+      } else {
+        console.error("Groq API Error:", await res.text());
+        responseText = "I'm having connection issues.";
+      }
+    } catch (error) {
+      console.error("Failed to fetch from Groq:", error);
+      responseText = "Oops, something went wrong on my end.";
+    }
+  }
+
+  const currentStore = useGameStore.getState();
+  if (currentStore.gameState !== 'active') return;
+
+  const typingDuration = responseText.length * 20;
+
+  setTimeout(() => {
+    const finalStore = useGameStore.getState();
+    if (finalStore.gameState === 'active') {
+      finalStore.addOpponentMessage(responseText);
+    }
+  }, Math.min(typingDuration, 3000));
 };
