@@ -6,7 +6,7 @@ import { signInWithGoogle, signOut } from '../lib/auth';
 import { useAuth } from '../hooks/useAuth';
 
 export default function Landing() {
-  const user = useAuth();
+  const { user, loading } = useAuth();
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center p-6 overflow-hidden perspective-1000">
@@ -76,8 +76,12 @@ export default function Landing() {
             </Button>
           </div>
 
-          {!user ? (
-            <div className="relative group">
+          {loading ? (
+            <div className="relative group flex items-center justify-center px-8 py-6 h-[52px] bg-white/5 border border-white/10 rounded-full animate-pulse backdrop-blur-xl">
+              <span className="text-[11px] text-neutral-400 font-medium tracking-widest uppercase">Connecting...</span>
+            </div>
+          ) : !user ? (
+            <div className="relative group animate-in fade-in zoom-in-95 duration-700">
               {/* Ambient button glow */}
               <div className="absolute inset-0 bg-white/10 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
               
@@ -96,11 +100,8 @@ export default function Landing() {
               </Button>
             </div>
           ) : (
-            <motion.div 
-              initial={{ opacity: 0, filter: "blur(10px)" }}
-              animate={{ opacity: 1, filter: "blur(0px)" }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="relative group flex items-center gap-4 px-6 py-3.5 bg-white/5 border border-white/10 backdrop-blur-xl rounded-full"
+            <div 
+              className="relative group flex items-center gap-4 px-6 py-3.5 bg-white/5 border border-white/10 backdrop-blur-xl rounded-full animate-in fade-in zoom-in-95 duration-700"
             >
               <div className="absolute inset-0 bg-white/5 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
               
@@ -113,7 +114,7 @@ export default function Landing() {
                   />
                 ) : (
                   <div className="w-9 h-9 rounded-full border border-white/20 bg-white/10 flex items-center justify-center text-xs font-medium text-white/70">
-                    {user.user_metadata?.full_name?.charAt(0) || "U"}
+                    {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0) || "U"}
                   </div>
                 )}
                 <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-black rounded-full" />
@@ -137,7 +138,7 @@ export default function Landing() {
               >
                 <LogOut className="w-4 h-4" />
               </button>
-            </motion.div>
+            </div>
           )}
         </motion.div>
 
