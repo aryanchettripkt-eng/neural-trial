@@ -7,10 +7,10 @@ import { useAuth } from '../hooks/useAuth';
 
 export default function Landing() {
   const { user, loading } = useAuth();
-
+  console.log("USER:", user);
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center p-6 overflow-hidden perspective-1000">
-      
+
       {/* Background Neural Orb */}
       <motion.div
         animate={{
@@ -38,16 +38,16 @@ export default function Landing() {
           </span>
         </motion.div>
 
-        <motion.h1 
+        <motion.h1
           initial={{ opacity: 0, y: 20, translateZ: 0 }}
           animate={{ opacity: 1, y: 0, translateZ: 40 }}
           transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white via-white/90 to-white/30 drop-shadow-sm"
         >
-          Can You Tell Human <br className="hidden md:block"/> From Machine?
+          Can You Tell Human <br className="hidden md:block" /> From Machine?
         </motion.h1>
 
-        <motion.p 
+        <motion.p
           initial={{ opacity: 0, y: 20, translateZ: 0 }}
           animate={{ opacity: 1, y: 0, translateZ: 20 }}
           transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
@@ -55,7 +55,7 @@ export default function Landing() {
         >
           A real-time psychological experiment. Chat for 60 seconds. Observe the nuances. Trust your instincts. Decide.
         </motion.p>
-        
+
         <motion.div
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -65,9 +65,9 @@ export default function Landing() {
           <div className="relative group">
             {/* Ambient button glow */}
             <div className="absolute inset-0 bg-white/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-            
-            <Button 
-              size="lg" 
+
+            <Button
+              size="lg"
               variant="glow"
               onClick={() => beginMatchmaking()}
               className="px-12 py-6 relative overflow-hidden bg-white/5 border border-white/10 backdrop-blur-xl hover:bg-white/10 hover:border-white/30 transition-all duration-500 rounded-full"
@@ -84,9 +84,9 @@ export default function Landing() {
             <div className="relative group animate-in fade-in zoom-in-95 duration-700">
               {/* Ambient button glow */}
               <div className="absolute inset-0 bg-white/10 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-              
-              <Button 
-                size="lg" 
+
+              <Button
+                size="lg"
                 onClick={() => signInWithGoogle()}
                 className="px-8 py-6 relative overflow-hidden bg-transparent border border-white/5 backdrop-blur-xl hover:bg-white/5 hover:border-white/20 transition-all duration-500 rounded-full flex items-center gap-3"
               >
@@ -100,16 +100,16 @@ export default function Landing() {
               </Button>
             </div>
           ) : (
-            <div 
+            <div
               className="relative group flex items-center gap-4 px-6 py-3.5 bg-white/5 border border-white/10 backdrop-blur-xl rounded-full animate-in fade-in zoom-in-95 duration-700"
             >
               <div className="absolute inset-0 bg-white/5 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-              
+
               <div className="relative flex items-center justify-center">
                 {user.user_metadata?.avatar_url ? (
-                  <img 
-                    src={user.user_metadata.avatar_url} 
-                    alt="Avatar" 
+                  <img
+                    src={user.user_metadata.avatar_url}
+                    alt="Avatar"
                     className="w-9 h-9 rounded-full border border-white/20 object-cover"
                   />
                 ) : (
@@ -131,7 +131,7 @@ export default function Landing() {
 
               <div className="w-[1px] h-8 bg-white/10 mx-2" />
 
-              <button 
+              <button
                 onClick={() => signOut()}
                 className="relative z-10 p-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300"
                 title="Disconnect"
@@ -142,7 +142,7 @@ export default function Landing() {
           )}
         </motion.div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5, delay: 0.8 }}
@@ -150,8 +150,8 @@ export default function Landing() {
         >
           {/* Subtle line glow */}
           <div className="absolute top-[-1px] left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-          
-          <motion.div 
+
+          <motion.div
             whileHover={{ y: -2 }}
             className="flex flex-col items-center group transition-transform duration-500"
           >
@@ -162,8 +162,8 @@ export default function Landing() {
             <span className="text-4xl font-light tabular-nums tracking-tight text-white/90">42%</span>
             <span className="text-[10px] text-neutral-500 uppercase tracking-widest mt-2 group-hover:text-neutral-400 transition-colors">Humans Fooled</span>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             whileHover={{ y: -2 }}
             className="flex flex-col items-center group transition-transform duration-500"
           >
